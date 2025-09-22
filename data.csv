@@ -1,0 +1,11 @@
+COUNTERS,2,0,0
+LOCATIONS
+0,kk,6,6
+1,jj,6,9
+ADJACENCY
+USERS
+3,hana,kk@gmail.com,2356523,l6363
+2,Alige,alice@mail.com,123456,pass123
+1,Alice,alice@mail.com,123456,pass123
+DRIVERS
+2,kitty,bob@mail.com,987654,driverpass

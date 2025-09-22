@@ -32,8 +32,11 @@ class RideManager {
 
     void detectOnEdgeDrivers ();
    void addTempNodes (driver & d);
+    void updateDriver(driver &d, float delta);
+    void removeDriverNodes(driver &d) ;
 
-   void deleteTempNodes();
+
+ //  void deleteTempNodes();
      
 };
 

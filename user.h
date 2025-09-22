@@ -12,15 +12,15 @@
 class user {
 
 
-string name;
-string email;
-string telephone;
-string password ;
-
 public :
+    string name;
+    string email;
+    string telephone;
+    string password ;
+
 location curr_location = location({0,0}," ");
 location destination =location({0,0}," ");
-
+    user() = default; // 👈 ADD THIS
 user (string , string , string , string);
 
 location getCurrLocation ();

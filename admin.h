@@ -14,6 +14,7 @@
 
 
 #define l endl;
+
 using namespace std;
 #ifndef ADMIN_H
 #define ADMIN_H
@@ -54,6 +55,7 @@ public:
   
    unordered_map<int , vector<pair<int,float> > > adj;        // adj list    {node id , weight }
   unordered_map<int, location> locationById; // assign id to every location to facilitate the searching
+   //just for dijkstra for now till I understand what is going on!!!!!
   unordered_map <int ,driver> drivers ;
   unordered_map <int , user> users ;
 
@@ -78,9 +80,11 @@ bool  edge_exists(int , int );
   void dfs(int node, vector<bool> &visited);
   void bfs(queue<int> &Qlocat, vector<bool> &visited, int start);
   void displayData();
-
+  queue<string> dijkstra(user& user,vector<int>&driverNodes);
 
   float lengthBetNodes (int a , int b );
+  void loadData();
+  void saveData();
 };
 
-#endif ADMIN_H;
+#endif

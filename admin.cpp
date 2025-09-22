@@ -2,6 +2,10 @@
 // Created by Hana on 9/2/2025.
 //
 #include "admin.h"
+
+#include <fstream>
+#include <sstream>
+
 #include "driver.h"
 #include "user.h"
 using namespace std;
@@ -89,27 +93,26 @@ void admin :: addGraph(){
     // updating the adj list and I need their id's 
     // updating the locationbyId => id , location with the new locations  
 }
-
-void admin::add_location()
-{
+void admin::add_location() {
     pair<float, float> coordinates;
-    string area;
     string name;
+
     cout << "Enter location name: ";
     cin >> name;
-    cout << "Enter location area: ";
-    cin >> area;
     cout << "Enter location coordinates: ";
-    cin >> coordinates.first;
-    cin >> coordinates.second;
-    numLocations++;
-    location locat(coordinates, name);
-    locationById[numLocations] = locat;
-    // Initialize adjacency list for this location ID
-    adj[numLocations] = {}; // empty vector<int> ready for neighbors
+    cin >> coordinates.first >> coordinates.second;
 
-    cout << "location added successfully" << l;
+    int id = numLocations++; // use current numLocations as ID, then increment
+
+    location locat(coordinates, name);
+    locationById[id] = locat;
+
+    // Initialize adjacency list for this location
+    adj[id] = {};
+
+    cout << "Location added successfully with ID = " << id << "\n";
 }
+
 void admin::add_road(){
 
     string name1, name2;
@@ -336,4 +339,132 @@ return static_cast<float>(dist); // convert at the end
 
 
 
+}
+
+
+queue<string> admin::dijkstra(user& user,vector<int>&driverNodes) {
+    const int INF =100000000;
+    vector<int> dist(numLocations, INF);
+    for (int i=0; i<driverNodes.size(); i++) {
+        dist[driverNodes[i]]=0;
+    }
+    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<>> pq;
+    //int usernode=
+    //pq.push({0, start});
+return {};
+}
+void admin::saveData() {
+    ofstream file("C:\\Users\\nonam\\CLionProjects\\Wasalni\\data.csv");
+    if (!file.is_open()) {
+        cerr << "Error: Could not open data.csv for writing!\n";
+        return;
+    }
+
+    // Save counters at the top
+    file << "COUNTERS," << numLocations << "," << numusers << "," << numdrivers << "\n";
+
+    // Write locations
+    file << "LOCATIONS\n";
+    for (auto &[id, loc] : locationById) {
+        file << id << "," << loc.name << ","
+             << loc.coordinates.first << ","
+             << loc.coordinates.second << "\n";
+    }
+
+    // Write adjacency list
+    file << "ADJACENCY\n";
+    for (auto &[node, neighbors] : adj) {
+        for (auto &[nbr, weight] : neighbors) {
+            file << node << "," << nbr << "," << weight << "\n";
+        }
+    }
+
+    // Write users
+    file << "USERS\n";
+    for (auto &[id, u] : users) {
+        file << id << "," << u.name << "," << u.email
+             << "," << u.telephone << "," << u.password << "\n";
+    }
+
+    // Write drivers
+    file << "DRIVERS\n";
+    for (auto &[id, d] : drivers) {
+        file << id << "," << d.name << "," << d.email
+             << "," << d.telephone << "," << d.password << "\n";
+    }
+
+    file.close();
+    cout << "Saved " << locationById.size() << " locations, "
+         << adj.size() << " adjacency entries, "
+         << users.size() << " users, and "
+         << drivers.size() << " drivers to data.csv\n";
+}
+
+
+// Load users and drivers from CSV file
+void admin::loadData() {
+    ifstream file("C:\\Users\\nonam\\CLionProjects\\Wasalni\\data.csv");
+    if (!file.is_open()) {
+        cerr << "No existing data.csv found. Starting fresh.\n";
+        return;
+    }
+
+    string line;
+    enum Section { NONE, LOCATIONS, ADJ, USERS, DRIVERS };
+    Section currentSection = NONE;
+
+    while (getline(file, line)) {
+        if (line.empty()) continue;
+
+        if (line == "LOCATIONS") { currentSection = LOCATIONS; continue; }
+        if (line == "ADJACENCY") { currentSection = ADJ; continue; }
+        if (line == "USERS") { currentSection = USERS; continue; }
+        if (line == "DRIVERS") { currentSection = DRIVERS; continue; }
+
+        stringstream ss(line);
+        string part;
+        vector<string> tokens;
+        while (getline(ss, part, ',')) tokens.push_back(part);
+
+        try {
+            if (line.find("COUNTERS") == 0) {
+                stringstream ss(line);
+                string temp;
+                getline(ss, temp, ','); // skip "COUNTERS"
+                ss >> numLocations; ss.ignore(1, ',');
+                ss >> numusers; ss.ignore(1, ',');
+                ss >> numdrivers;
+            }
+           else if (currentSection == LOCATIONS && tokens.size() == 4) {
+                int id = stoi(tokens[0]);
+                string name = tokens[1];
+                float x = stof(tokens[2]);
+                float y = stof(tokens[3]);
+                locationById[id] = location({x, y}, name);
+            }
+            else if (currentSection == ADJ && tokens.size() == 3) {
+                int node = stoi(tokens[0]);
+                int nbr = stoi(tokens[1]);
+                float weight = stof(tokens[2]);
+                adj[node].push_back({nbr, weight});
+            }
+            else if (currentSection == USERS && tokens.size() == 5) {
+                int id = stoi(tokens[0]);
+                users[id] = user(tokens[1], tokens[2], tokens[3], tokens[4]);
+            }
+            else if (currentSection == DRIVERS && tokens.size() == 5) {
+                int id = stoi(tokens[0]);
+                drivers[id] = driver(tokens[1], tokens[2], tokens[3], tokens[4]);
+            }
+        } catch (const std::invalid_argument &) {
+            cerr << "Skipping invalid line: " << line << "\n";
+        }
+    }
+
+    file.close();
+
+    cout << "Loaded " << locationById.size() << " locations, "
+         << adj.size() << " adjacency entries, "
+         << users.size() << " users, and "
+         << drivers.size() << " drivers from data.csv\n";
 }

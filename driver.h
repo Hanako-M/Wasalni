@@ -12,12 +12,13 @@ class driver {
 
 
 
-    private :
+    public :
     string password;
     public :
     float progress ;
 pair<int,int>street; // node1 , node2
 bool available = true;
+    std::vector<int> driverNodes; // NEW: track temp nodes for this driver
 
 
 location curr_location=location({0,0}," ");
@@ -28,7 +29,7 @@ string telephone;
 
 
 
-
+    driver() = default; // 👈 ADD THIS
 driver(string name ,string email,string telephone,string pass);
 void setdriverlocation(location curr_locat,pair<int,int>street);
 void setavailability(bool available);

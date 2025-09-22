@@ -1,70 +1,77 @@
-#include <iostream>
+#include <bits/stdc++.h>
+#include "admin.h"
+#include "user.h"
+#include "driver.h"
+using namespace std;
 
-// TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 int main() {
-    // TIP Press <shortcut actionId="RenameElement"/> when your caret is at the
-    // <b>lang</b> variable name to see how CLion can help you rename it.
-    auto lang = "C++";
-    std::cout << "Hello and welcome to " << lang << "!\n";
+    admin Admin;
+    Admin.loadData();
 
-    for (int i = 1; i <= 5; i++) {
-        // TIP Press <shortcut actionId="Debug"/> to start debugging your code.
-        // We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/>
-        // breakpoint for you, but you can always add more by pressing
-        // <shortcut actionId="ToggleLineBreakpoint"/>.
-        std::cout << "i = " << i << std::endl;
+    // Add a sample user/driver only once (for testing)
+
+        Admin.users[2] = user("Alige", "alice@mail.com", "123456", "pass123");
+
+        Admin.drivers[2] = driver("kitty", "bob@mail.com", "987654", "driverpass");
+
+    while (true) {
+        cout << "\n--- MENU ---\n";
+        cout << "1. Add location\n";
+        cout << "2. Add road\n";
+        cout << "3. Display graph data\n";
+        cout << "4. Add user & request ride\n";
+        cout << "5. Add driver\n";
+        cout << "0. Exit\n";
+        cout << "Choose an option: ";
+
+        int choice;
+        cin >> choice;
+        cin.ignore();
+
+        if (choice == 0) break;
+
+        switch (choice) {
+            case 1:
+                Admin.add_location();
+                break;
+            case 2:
+                Admin.add_road();
+                break;
+            case 3:
+                Admin.displayData();
+                break;
+            case 4: {
+                string name, email, phone, pass;
+                cout << "Enter user name email phone password: ";
+                cin >> name >> email >> phone >> pass;
+
+                int nextUserId = Admin.users.empty() ? 1 : Admin.users.begin()->first + 1;
+                Admin.users[nextUserId] = user(name, email, phone, pass);
+
+                Admin.users[nextUserId].requestRide(Admin);
+                break;
+            }
+            case 5: {
+                string name, email, phone, pass;
+                cout << "Enter driver name email phone password: ";
+                cin >> name >> email >> phone >> pass;
+
+                int nextDriverId = Admin.drivers.empty() ? 1 : Admin.drivers.begin()->first + 1;
+                Admin.drivers[nextDriverId] = driver(name, email, phone, pass);
+
+                cout << "Driver added!\n";
+                break;
+            }
+            default:
+                cout << "Invalid choice!\n";
+        }
     }
 
+    cout << "\nSaving " << Admin.users.size() << " users and "
+         << Admin.drivers.size() << " drivers...\n";
+
+    Admin.saveData();
+
+    cout << "Goodbye!\n";
     return 0;
 }
-
-// TIP See CLion help at <a
-// href="https://www.jetbrains.com/help/clion/">jetbrains.com/help/clion/</a>.
-//  Also, you can try interactive lessons for CLion by selecting
-//  'Help | Learn IDE Features' from the main menu.
-
-
-/*
-
-configuration step 
-mkdir build
-cmake -S . -B build
-
-
-
-
-
-🔄 When to re-run step 1 (configure)
-
-Do this only if:
-
-You delete the build/ folder
-
-You add/remove .cpp files in CMakeLists.txt
-
-You change CMake options
-
-Otherwise → skip straight to Step 2.
-
-
-*/
-
-
-
-
-
-/*
-
-
-
-
-
-👉 Most of the time, your daily workflow is just:
-
-Edit code
-
-Run cmake --build build --config Debug
-
-Run .\build\Debug\Wasalni.exe
-*/
