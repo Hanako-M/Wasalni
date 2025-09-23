@@ -7,6 +7,7 @@
 #ifndef USER_H
 #define USER_H
 #include "admin.h"
+#include "driver.h"
 
 
 class user {
@@ -17,7 +18,9 @@ public :
     string email;
     string telephone;
     string password ;
-
+    int currNode;
+    driver currDriver;
+    int destination_node;
 location curr_location = location({0,0}," ");
 location destination =location({0,0}," ");
     user() = default; // 👈 ADD THIS

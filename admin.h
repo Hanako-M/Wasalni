@@ -56,6 +56,7 @@ public:
    unordered_map<int , vector<pair<int,float> > > adj;        // adj list    {node id , weight }
   unordered_map<int, location> locationById; // assign id to every location to facilitate the searching
    //just for dijkstra for now till I understand what is going on!!!!!
+  vector<int> driverNodes;
   unordered_map <int ,driver> drivers ;
   unordered_map <int , user> users ;
 
@@ -80,8 +81,8 @@ bool  edge_exists(int , int );
   void dfs(int node, vector<bool> &visited);
   void bfs(queue<int> &Qlocat, vector<bool> &visited, int start);
   void displayData();
-  queue<string> dijkstra(user& user,vector<int>&driverNodes);
-
+int driverdijkstra(int userNode,vector<int>&driverNodes);
+  vector<int> pathdijkstra(int start,int end,driver& driver)
   float lengthBetNodes (int a , int b );
   void loadData();
   void saveData();

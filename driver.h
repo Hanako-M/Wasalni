@@ -16,6 +16,7 @@ class driver {
     string password;
     public :
     float progress ;
+    int nodeId; ///////////the node the driver is on
 pair<int,int>street; // node1 , node2
 bool available = true;
     std::vector<int> driverNodes; // NEW: track temp nodes for this driver

@@ -342,17 +342,85 @@ return static_cast<float>(dist); // convert at the end
 }
 
 
-queue<string> admin::dijkstra(user& user,vector<int>&driverNodes) {
-    const int INF =100000000;
-    vector<int> dist(numLocations, INF);
+int admin::driverdijkstra(int userNode,vector<int>&driverNodes) {  //will return driver node id
+    const int INF =10000000;
+    vector<float> dist(numLocations, INF);
+    priority_queue<pair<float,int>, vector<pair<int,int>>, greater<>> pq;
+    unordered_map<int, int> parentDriver; // track which driver reached this node
+
     for (int i=0; i<driverNodes.size(); i++) {
         dist[driverNodes[i]]=0;
+        pq.push({0, driverNodes[i]}); //push all drivers in the pq
+        parentDriver[driverNodes[i]] = driverNodes[i]; // each driver is their own parent
     }
-    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<>> pq;
-    //int usernode=
-    //pq.push({0, start});
-return {};
+    while (pq.empty()==false) {
+        pair curr = pq.top();
+        pq.pop();
+        if (curr.second == userNode) {
+            cout << "Nearest driver is at node " << parentDriver[curr.second]
+                 << " with distance " << curr.first << "\n";
+            return parentDriver[curr.second];
+        }
+        // skip if this is an outdated distance
+        if (curr.first > dist[curr.second]) continue;
+        for (auto p : adj[curr.second]) { // p.first neighbor id p.second weight
+            dist[p.first]=min(dist[p.first],curr.first+p.second);//update neighbors dist
+            parentDriver[p.first] = parentDriver[curr.second]; //parent of the neighbor is the parent of the parent lol
+            pq.push({dist[p.first] ,p.first});//push neighbor in the pq
+        }
+    }
+    cout << "All drivers are busy!\n";
+    return -1;
 }
+
+
+vector<int> admin::pathdijkstra(int start,int end,driver& driver) {  //return path
+    const int INF =10000000;
+    vector<float> dist(numLocations, INF);
+    priority_queue<pair<float,int>, vector<pair<int,int>>, greater<>> pq;
+    unordered_map<int, int> parent;//save parents nodes
+    vector<int>q;
+    dist[start]=0;
+    pq.push({0, start});
+
+    while (pq.empty()==false) {
+        pair curr=pq.top();
+        pq.pop();
+        if (curr.second == end) {
+            cout << "You have reached your destination! " <<endl;
+            driver.available=true;
+            driver.nodeId=end;
+            //we should know the current location cooordinates !!!!!!!!!!!!!!!!!!!!!!!!
+            //update user location or delete the user or whatever
+           break;
+        }
+
+        if (curr.first > dist[curr.second]) {continue;}//if its outdated distance
+        for (auto p : adj[curr.second]) { // p.first neighbor id p.second weight
+            dist[p.first]=min(dist[p.first],curr.first+p.second);//update neighbors dist
+            parent[p.first] = parent[curr.second]; //parent of the neighbor is the parent of the parent lol
+            pq.push({dist[p.first] ,p.first});//push neighbor in the pq
+        }
+    }
+    int node=end;
+    while (node != -1) {
+        q.push_back(node);
+        node = parent[node];
+    }
+return q;
+}
+//yarab teshtaghal mn awel mara
+
+
+
+
+
+
+
+
+
+
+///////////////////////////////////file logic///////////////////////////////////////////////////////////////////
 void admin::saveData() {
     ofstream file("C:\\Users\\nonam\\CLionProjects\\Wasalni\\data.csv");
     if (!file.is_open()) {
@@ -399,7 +467,6 @@ void admin::saveData() {
          << users.size() << " users, and "
          << drivers.size() << " drivers to data.csv\n";
 }
-
 
 // Load users and drivers from CSV file
 void admin::loadData() {
